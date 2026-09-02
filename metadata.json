@@ -1,0 +1,6 @@
+{
+  "name": "KEC Smart Display Link APP",
+  "description": "WiFi controller for NodeMCU ESP8266 P10 LED matrix smart display by Kuppam Engineering College.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

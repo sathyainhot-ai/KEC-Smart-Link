@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer screen frame -->
+    <path
+        android:fillColor="#1E293B"
+        android:pathData="M24,28 h60 a6,6 0 0 1 6,6 v40 a6,6 0 0 1 -6,6 h-60 a6,6 0 0 1 -6,-6 v-40 a6,6 0 0 1 6,-6 z" />
+    <!-- Screen bezel/inner screen -->
+    <path
+        android:fillColor="#090D16"
+        android:pathData="M28,32 h52 a2,2 0 0 1 2,2 v32 a2,2 0 0 1 -2,2 h-52 a2,2 0 0 1 -2,-2 v-32 a2,2 0 0 1 2,-2 z" />
+    <!-- LED Matrix dots (Cyan glow & Orange temperature sensor indicator) -->
+    <!-- Row 1: Digital text LEDs -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M33,37h3v3h-3z M38,37h3v3h-3z M43,37h3v3h-3z M48,37h3v3h-3z M53,37h3v3h-3z M58,37h3v3h-3z M63,37h3v3h-3z M68,37h3v3h-3z M73,37h3v3h-3z" />
+    <!-- Row 2: Digital text LEDs -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M33,42h3v3h-3z M43,42h3v3h-3z M53,42h3v3h-3z M63,42h3v3h-3z M73,42h3v3h-3z" />
+    <!-- Row 3: Digital text LEDs -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M33,47h3v3h-3z M38,47h3v3h-3z M43,47h3v3h-3z M48,47h3v3h-3z M53,47h3v3h-3z M58,47h3v3h-3z M63,47h3v3h-3z M68,47h3v3h-3z M73,47h3v3h-3z" />
+    <!-- Row 4: Digital text LEDs -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M33,52h3v3h-3z M43,52h3v3h-3z M53,52h3v3h-3z M63,52h3v3h-3z M73,52h3v3h-3z" />
+    <!-- Row 5: Digital text LEDs (Active Amber LED indicators) -->
+    <path
+        android:fillColor="#FB923C"
+        android:pathData="M33,57h3v3h-3z M38,57h3v3h-3z M43,57h3v3h-3z M48,57h3v3h-3z M53,57h3v3h-3z M58,57h3v3h-3z M63,57h3v3h-3z M68,57h3v3h-3z M73,57h3v3h-3z" />
+    <!-- Stand / Base -->
+    <path
+        android:fillColor="#334155"
+        android:pathData="M48,80 h12 v4 h-12 z M42,84 h24 v2 h-24 z" />
+</vector>

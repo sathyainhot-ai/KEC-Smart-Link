@@ -1,0 +1,145 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Outer Gear Wheel (24 Teeth) -->
+    <!-- Base Circular Ring -->
+    <path
+        android:fillColor="#0B57D0"
+        android:pathData="M100,100 m-94,0 a94,94 0 1,0 188,0 a94,94 0 1,0 -188,0" />
+
+    <!-- Gear Teeth (Rotated segments) -->
+    <group android:pivotX="100" android:pivotY="100">
+        <!-- 0 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M93,2 L107,2 L109,14 L91,14 Z" />
+        <!-- 30 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M141,15 L153,22 L149,34 L137,27 Z" />
+        <!-- 45 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M162,31 L172,41 L163,51 L153,41 Z" />
+        <!-- 60 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M178,53 L185,65 L173,71 L166,59 Z" />
+        <!-- 90 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M186,93 L198,93 L198,107 L186,107 Z" />
+        <!-- 120 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M178,147 L185,135 L173,129 L166,141 Z" />
+        <!-- 135 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M162,169 L172,159 L163,149 L153,159 Z" />
+        <!-- 150 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M141,185 L153,178 L149,166 L137,173 Z" />
+        <!-- 180 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M93,198 L107,198 L109,186 L91,186 Z" />
+        <!-- 210 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M47,178 L59,185 L63,173 L51,166 Z" />
+        <!-- 225 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M28,159 L38,169 L47,159 L37,149 Z" />
+        <!-- 240 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M15,135 L22,147 L34,141 L27,129 Z" />
+        <!-- 270 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M2,93 L14,93 L14,107 L2,107 Z" />
+        <!-- 300 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M15,65 L22,53 L34,59 L27,71 Z" />
+        <!-- 315 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M28,41 L38,31 L47,41 L37,51 Z" />
+        <!-- 330 deg -->
+        <path android:fillColor="#0B57D0" android:pathData="M47,22 L59,15 L63,27 L51,34 Z" />
+    </group>
+
+    <!-- Inner White Ring Border -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M100,100 m-82,0 a82,82 0 1,0 164,0 a82,82 0 1,0 -164,0" />
+
+    <!-- Light Blue Circular Belt ("KUPPAM EDUCATIONAL SOCIETY") -->
+    <path
+        android:fillColor="#D8E8FC"
+        android:pathData="M100,100 m-80,0 a80,80 0 1,0 160,0 a80,80 0 1,0 -160,0" />
+
+    <!-- Red Outer Ring Lining -->
+    <path
+        android:strokeColor="#C02626"
+        android:strokeWidth="2.5"
+        android:fillColor="#00000000"
+        android:pathData="M100,100 m-56,0 a56,56 0 1,0 112,0 a56,56 0 1,0 -112,0" />
+
+    <!-- Inner Blue Globe / Disc -->
+    <path
+        android:fillColor="#0B3C82"
+        android:pathData="M100,100 m-54,0 a54,54 0 1,0 108,0 a54,54 0 1,0 -108,0" />
+
+    <!-- Blue Gradient Center Disc -->
+    <path
+        android:fillColor="#1D64C2"
+        android:pathData="M100,100 m-42,0 a42,42 0 1,0 84,0 a42,42 0 1,0 -84,0" />
+
+    <!-- Atom Orbit 1 (Horizontal ellipse) -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.5"
+        android:fillColor="#00000000"
+        android:pathData="M 60,100 C 60,82 140,82 140,100 C 140,118 60,118 60,100 Z" />
+
+    <!-- Atom Orbit 2 (Diagonal Left-Right) -->
+    <group android:pivotX="100" android:pivotY="100" android:rotation="60">
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="2.5"
+            android:fillColor="#00000000"
+            android:pathData="M 60,100 C 60,82 140,82 140,100 C 140,118 60,118 60,100 Z" />
+    </group>
+
+    <!-- Atom Orbit 3 (Diagonal Right-Left) -->
+    <group android:pivotX="100" android:pivotY="100" android:rotation="-60">
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="2.5"
+            android:fillColor="#00000000"
+            android:pathData="M 60,100 C 60,82 140,82 140,100 C 140,118 60,118 60,100 Z" />
+    </group>
+
+    <!-- Orbit Electrons (Cyan/White spheres) -->
+    <path
+        android:fillColor="#60A5FA"
+        android:pathData="M100,60 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+    <path
+        android:fillColor="#60A5FA"
+        android:pathData="M65,120 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+    <path
+        android:fillColor="#60A5FA"
+        android:pathData="M135,120 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+
+    <!-- Radiant Rays behind the Diya Lamp -->
+    <path
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="1.8"
+        android:pathData="M100,75 L100,82 M88,80 L93,85 M112,80 L107,85 M82,90 L88,92 M118,90 L112,92 M84,100 L90,99 M116,100 L110,99" />
+
+    <!-- Traditional Diya / Deepam (Earthen Lamp) -->
+    <path
+        android:fillColor="#653518"
+        android:pathData="M88,102 C88,112 112,112 112,102 C108,104 92,104 88,102 Z" />
+    <path
+        android:fillColor="#8B4513"
+        android:pathData="M89,102 C93,105 107,105 111,102 C107,103 93,103 89,102 Z" />
+
+    <!-- Lamp Flame (Golden / Orange / Red) -->
+    <path
+        android:fillColor="#EF4444"
+        android:pathData="M100,85 C97,91 95,96 95,100 C95,104 105,104 105,100 C105,96 103,91 100,85 Z" />
+    <path
+        android:fillColor="#FBBF24"
+        android:pathData="M100,88 C98,92 97,96 97,99 C97,102 103,102 103,99 C103,96 102,92 100,88 Z" />
+
+    <!-- Year 2000 Ribbon Base (Deep Red) -->
+    <path
+        android:fillColor="#C02626"
+        android:pathData="M82,142 C94,146 106,146 118,142 L116,150 C106,153 94,153 84,150 Z" />
+
+    <!-- Central White Star on Ribbon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M100,144 L101.5,147.5 L105,147.5 L102,149.5 L103,153 L100,150.8 L97,153 L98,149.5 L95,147.5 L98.5,147.5 Z" />
+
+</vector>
