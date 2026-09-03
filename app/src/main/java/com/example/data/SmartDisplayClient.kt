@@ -78,6 +78,20 @@ class SmartDisplayClient {
     executeGetRequest(fullUrl)
   }
 
+  /**
+   * Tests reachability of the NodeMCU Web Server.
+   */
+  suspend fun testConnection(ipAddress: String): NetworkResult = withContext(Dispatchers.IO) {
+    val baseUrl = formatBaseUrl(ipAddress)
+    if (baseUrl.isEmpty()) {
+      return@withContext NetworkResult.Error("Please enter a valid IP address", "")
+    }
+
+    // Ping the /message endpoint to see if ESP server responds
+    val fullUrl = "$baseUrl/message"
+    executeGetRequest(fullUrl)
+  }
+
   private fun executeGetRequest(url: String): NetworkResult {
     val startTime = System.currentTimeMillis()
     val request = try {

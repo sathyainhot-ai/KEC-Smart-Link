@@ -27,7 +27,7 @@ class PreferencesManager(context: Context) {
     private const val PREFS_NAME = "smart_display_prefs"
     private const val KEY_IP_ADDRESS = "key_ip_address"
     private const val KEY_LAST_MESSAGE = "key_last_message"
-    private const val DEFAULT_IP = "192.168.4.1"
+    private const val DEFAULT_IP = "192.168.1.150"
     private const val DEFAULT_MESSAGE = "HELLO WORLD"
   }
 }
