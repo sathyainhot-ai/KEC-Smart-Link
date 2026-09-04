@@ -27,7 +27,16 @@ class PreferencesManager(context: Context) {
     private const val PREFS_NAME = "smart_display_prefs"
     private const val KEY_IP_ADDRESS = "key_ip_address"
     private const val KEY_LAST_MESSAGE = "key_last_message"
-    private const val DEFAULT_IP = "192.168.1.150"
+    private const val KEY_SECURITY_PIN = "key_security_pin"
+    private const val DEFAULT_IP = "192.168.4.1"
     private const val DEFAULT_MESSAGE = "HELLO WORLD"
+  }
+
+  fun getSecurityPin(): String {
+    return sharedPreferences.getString(KEY_SECURITY_PIN, "") ?: ""
+  }
+
+  fun saveSecurityPin(pin: String) {
+    sharedPreferences.edit().putString(KEY_SECURITY_PIN, pin.trim()).apply()
   }
 }

@@ -38,6 +38,7 @@ data class CommandLog(
 data class SmartDisplayUiState(
   val ipAddress: String = "",
   val messageText: String = "",
+  val securityPin: String = "",
   val currentMode: DisplayMode = DisplayMode.UNKNOWN,
   val activeDisplayContent: String = "ESP8266 SMART DISPLAY",
   val isExecuting: Boolean = false,
@@ -47,7 +48,7 @@ data class SmartDisplayUiState(
   val lastResponseBody: String? = null,
   val commandLogs: List<CommandLog> = emptyList(),
   val scanProgress: ScanProgress = ScanProgress(),
-  val detectedSubnet: String = "192.168.1."
+  val detectedSubnet: String = "192.168.4."
 )
 
 class SmartDisplayViewModel(application: Application) : AndroidViewModel(application) {
@@ -62,6 +63,7 @@ class SmartDisplayViewModel(application: Application) : AndroidViewModel(applica
     SmartDisplayUiState(
       ipAddress = prefs.getIpAddress(),
       messageText = prefs.getLastMessage(),
+      securityPin = prefs.getSecurityPin(),
       detectedSubnet = scanner.detectLocalSubnet()
     )
   )
@@ -70,6 +72,11 @@ class SmartDisplayViewModel(application: Application) : AndroidViewModel(applica
   fun onIpAddressChanged(newIp: String) {
     _uiState.update { it.copy(ipAddress = newIp) }
     prefs.saveIpAddress(newIp)
+  }
+
+  fun onSecurityPinChanged(newPin: String) {
+    _uiState.update { it.copy(securityPin = newPin) }
+    prefs.saveSecurityPin(newPin)
   }
 
   fun applyQuickIp(ip: String) {
@@ -248,13 +255,15 @@ class SmartDisplayViewModel(application: Application) : AndroidViewModel(applica
     }
 
     viewModelScope.launch {
-      when (val result = client.sendMessage(ip, text)) {
+      val pin = state.securityPin.trim().ifEmpty { null }
+      when (val result = client.sendMessage(ip, text, pin)) {
         is NetworkResult.Success -> {
           val timestamp = timeFormat.format(Date())
+          val endpointLabel = "/message?text=${text.take(20)}${if (pin != null) "&pin=***" else ""}"
           val newLog = CommandLog(
             timestamp = timestamp,
             command = "Send Message",
-            endpoint = "/message?text=${text.take(20)}",
+            endpoint = endpointLabel,
             isSuccess = true,
             statusMessage = "Command Sent (HTTP ${result.statusCode})",
             latencyMs = result.latencyMs,

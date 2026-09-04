@@ -46,9 +46,9 @@ class SmartDisplayClient {
 
   /**
    * Sends custom text message to NodeMCU:
-   * GET http://<IP_ADDRESS>/message?text=<USER_TEXT>
+   * GET http://<IP_ADDRESS>/message?text=<USER_TEXT>&pin=<OPTIONAL_PIN>
    */
-  suspend fun sendMessage(ipAddress: String, text: String): NetworkResult = withContext(Dispatchers.IO) {
+  suspend fun sendMessage(ipAddress: String, text: String, pin: String? = null): NetworkResult = withContext(Dispatchers.IO) {
     val baseUrl = formatBaseUrl(ipAddress)
     if (baseUrl.isEmpty()) {
       return@withContext NetworkResult.Error("Please enter a valid IP address", "")
@@ -60,7 +60,15 @@ class SmartDisplayClient {
       text.replace(" ", "%20")
     }
 
-    val fullUrl = "$baseUrl/message?text=$encodedText"
+    val pinParam = if (!pin.isNullOrBlank()) {
+      try {
+        "&pin=${URLEncoder.encode(pin.trim(), "UTF-8")}"
+      } catch (e: Exception) {
+        "&pin=${pin.trim()}"
+      }
+    } else ""
+
+    val fullUrl = "$baseUrl/message?text=$encodedText$pinParam"
     executeGetRequest(fullUrl)
   }
 

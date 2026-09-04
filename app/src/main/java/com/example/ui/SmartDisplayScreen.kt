@@ -33,12 +33,15 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Thermostat
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -84,6 +87,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -145,10 +150,6 @@ fun SmartDisplayScreen(
         GeometricConnectionCard(
           ipAddress = uiState.ipAddress,
           onIpChanged = { viewModel.onIpAddressChanged(it) },
-          scanProgress = uiState.scanProgress,
-          detectedSubnet = uiState.detectedSubnet,
-          onStartScan = { viewModel.startNetworkScan() },
-          onCancelScan = { viewModel.cancelNetworkScan() },
           onTestConnection = { viewModel.testConnection() },
           isExecuting = uiState.isExecuting,
           onDone = { focusManager.clearFocus() }
@@ -158,6 +159,8 @@ fun SmartDisplayScreen(
         GeometricContentControlCard(
           message = uiState.messageText,
           onMessageChanged = { viewModel.onMessageTextChanged(it) },
+          securityPin = uiState.securityPin,
+          onSecurityPinChanged = { viewModel.onSecurityPinChanged(it) },
           onSendMessage = {
             focusManager.clearFocus()
             viewModel.sendMessage()
@@ -316,38 +319,20 @@ fun P10MatrixPreviewCard(
 }
 
 /**
- * Geometric Connection Card on Pure White Surface with Auto-Scan, Quick Presets & High-Mount IP Guide
+ * Geometric Connection Card for Direct NodeMCU Wi-Fi (No Router or Hotspot required)
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GeometricConnectionCard(
   ipAddress: String,
   onIpChanged: (String) -> Unit,
-  scanProgress: ScanProgress,
-  detectedSubnet: String,
-  onStartScan: () -> Unit,
-  onCancelScan: () -> Unit,
   onTestConnection: () -> Unit,
   isExecuting: Boolean,
   onDone: () -> Unit,
   modifier: Modifier = Modifier
 ) {
-  var isDropdownExpanded by remember { mutableStateOf(false) }
   var showHelpDialog by remember { mutableStateOf(false) }
 
-  val subnetPresets = remember {
-    listOf(
-      "192.168.1.150" to "192.168.1.150 (Default Code Static IP)",
-      "192.168.4.1" to "192.168.4.1 (ESP AP Mode)",
-      "192.168.1." to "192.168.1.x (Class C Subnet)",
-      "192.168.43." to "192.168.43.x (Mobile Hotspot)",
-      "192.168.0." to "192.168.0.x (Home Subnet)",
-      "10.0.0." to "10.0.0.x (Class A Subnet)"
-    )
-  }
-  val matchingPreset = subnetPresets.find { (prefix, _) -> ipAddress.startsWith(prefix) }
-
-  // High-Mounted Display IP Helper Dialog
+  // Direct Connection Help Dialog
   if (showHelpDialog) {
     AlertDialog(
       onDismissRequest = { showHelpDialog = false },
@@ -357,12 +342,12 @@ fun GeometricConnectionCard(
           horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
           Icon(
-            imageVector = Icons.Default.Info,
+            imageVector = Icons.Default.Wifi,
             contentDescription = null,
             tint = GeoBluePrimary
           )
           Text(
-            text = "Finding Display IP (High Mount)",
+            text = "Direct NodeMCU Wi-Fi Guide",
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             color = GeoTextPrimary
           )
@@ -371,7 +356,7 @@ fun GeometricConnectionCard(
       text = {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
           Text(
-            text = "Since the display is mounted high and cannot be easily connected to a PC, use these 3 options right from your phone:",
+            text = "No Wi-Fi router and no mobile hotspot are needed. Your phone connects directly to the NodeMCU's own Wi-Fi network:",
             style = MaterialTheme.typography.bodySmall,
             color = GeoTextSecondary
           )
@@ -382,12 +367,12 @@ fun GeometricConnectionCard(
           ) {
             Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
               Text(
-                text = "1. Code Static IP: 192.168.1.150 (Fastest)",
+                text = "1. Connect Phone to NodeMCU Wi-Fi",
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 color = GeoBluePrimary
               )
               Text(
-                text = "Your Arduino sketch has IPAddress local_IP(192, 168, 1, 150) pre-set. Make sure your phone is connected to WiFi 'SSNC' and tap the '192.168.1.150 (Default ★)' chip below.",
+                text = "Turn on Wi-Fi on your phone and select your NodeMCU network from the Wi-Fi list.",
                 style = MaterialTheme.typography.bodySmall,
                 color = GeoTextPrimary
               )
@@ -400,12 +385,12 @@ fun GeometricConnectionCard(
           ) {
             Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
               Text(
-                text = "2. Auto-Detect Display (WiFi Scanner)",
+                text = "2. Default IP is Always 192.168.4.1",
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 color = GeoBluePrimary
               )
               Text(
-                text = "Tap the 'Auto-Detect Display on WiFi' button in this app. The app automatically sweeps your network and finds the active NodeMCU board.",
+                text = "In Direct Access Point mode, the NodeMCU always uses IP 192.168.4.1. This never changes.",
                 style = MaterialTheme.typography.bodySmall,
                 color = GeoTextPrimary
               )
@@ -418,12 +403,12 @@ fun GeometricConnectionCard(
           ) {
             Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
               Text(
-                text = "3. Mobile Hotspot Connected Devices",
+                text = "3. Tap Ping to Verify",
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 color = GeoBluePrimary
               )
               Text(
-                text = "If using your mobile hotspot ('SSNC'), go to phone Settings > Portable Hotspot > Connected Devices to see the ESP8266 IP address immediately without looking up at the board.",
+                text = "Tap the Ping button. Once confirmed online, enter your message and tap Send!",
                 style = MaterialTheme.typography.bodySmall,
                 color = GeoTextPrimary
               )
@@ -478,14 +463,23 @@ fun GeometricConnectionCard(
               modifier = Modifier.size(18.dp)
             )
           }
-          Text(
-            text = "HOST CONNECTION",
-            style = MaterialTheme.typography.labelMedium.copy(
-              fontWeight = FontWeight.Bold,
-              letterSpacing = 1.2.sp,
-              color = GeoTextPrimary
+          Column {
+            Text(
+              text = "NODEMCU DIRECT WI-FI",
+              style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.2.sp,
+                color = GeoTextPrimary
+              )
             )
-          )
+            Text(
+              text = "Direct connection • No router or hotspot needed",
+              style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 10.sp,
+                color = GeoTextSecondary
+              )
+            )
+          }
         }
 
         TextButton(
@@ -500,7 +494,7 @@ fun GeometricConnectionCard(
           )
           Spacer(Modifier.width(4.dp))
           Text(
-            text = "IP Helper",
+            text = "Help",
             fontSize = 12.sp,
             color = GeoBluePrimary,
             fontWeight = FontWeight.Bold
@@ -522,13 +516,13 @@ fun GeometricConnectionCard(
             .testTag("ip_address_input"),
           placeholder = {
             Text(
-              "192.168.1.150",
+              "192.168.4.1",
               color = GeoTextTertiary
             )
           },
           label = {
             Text(
-              "Host IP Address",
+              "NodeMCU IP Address",
               fontWeight = FontWeight.SemiBold
             )
           },
@@ -552,12 +546,12 @@ fun GeometricConnectionCard(
             )
           },
           trailingIcon = {
-            if (ipAddress.isNotEmpty()) {
-              IconButton(onClick = { onIpChanged("") }) {
+            if (ipAddress != "192.168.4.1") {
+              IconButton(onClick = { onIpChanged("192.168.4.1") }) {
                 Icon(
-                  imageVector = Icons.Default.Clear,
-                  contentDescription = "Clear IP",
-                  tint = GeoTextSecondary
+                  imageVector = Icons.Default.Refresh,
+                  contentDescription = "Reset to 192.168.4.1",
+                  tint = GeoBluePrimary
                 )
               }
             }
@@ -572,12 +566,19 @@ fun GeometricConnectionCard(
             unfocusedLabelColor = GeoTextSecondary,
             focusedTextColor = GeoTextPrimary,
             unfocusedTextColor = GeoTextPrimary
-          )
+          ),
+          supportingText = {
+            Text(
+              text = if (ipAddress == "192.168.4.1") "Default direct AP IP: 192.168.4.1" else "Tap refresh icon to restore 192.168.4.1",
+              style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+              color = GeoTextSecondary
+            )
+          }
         )
 
         Button(
           onClick = onTestConnection,
-          enabled = !isExecuting && !scanProgress.isScanning && ipAddress.isNotEmpty(),
+          enabled = !isExecuting && ipAddress.isNotEmpty(),
           modifier = Modifier
             .height(56.dp)
             .testTag("test_ping_button"),
@@ -605,185 +606,28 @@ fun GeometricConnectionCard(
         }
       }
 
-      // Scanner Section / Button
-      if (scanProgress.isScanning) {
-        Card(
-          colors = CardDefaults.cardColors(containerColor = GeoBlueContainer.copy(alpha = 0.45f)),
-          shape = RoundedCornerShape(14.dp),
-          border = androidx.compose.foundation.BorderStroke(1.dp, GeoBluePrimary.copy(alpha = 0.4f)),
-          modifier = Modifier.fillMaxWidth()
+      // Quick helper guide banner
+      Card(
+        colors = CardDefaults.cardColors(containerColor = GeoSurfaceVariant),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
+      ) {
+        Row(
+          modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-          Column(
-            modifier = Modifier.padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-          ) {
-            Row(
-              modifier = Modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.SpaceBetween,
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-              Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-              ) {
-                CircularProgressIndicator(
-                  modifier = Modifier.size(16.dp),
-                  strokeWidth = 2.dp,
-                  color = GeoBluePrimary
-                )
-                Text(
-                  text = "Scanning WiFi Network...",
-                  style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                  color = GeoOnBlueContainer
-                )
-              }
-              TextButton(onClick = onCancelScan) {
-                Text(
-                  text = "Cancel",
-                  color = GeoTextSecondary,
-                  fontWeight = FontWeight.Bold,
-                  fontSize = 12.sp
-                )
-              }
-            }
-
-            LinearProgressIndicator(
-              progress = {
-                if (scanProgress.totalCount > 0) scanProgress.scannedCount.toFloat() / scanProgress.totalCount.toFloat() else 0f
-              },
-              modifier = Modifier
-                .fillMaxWidth()
-                .height(6.dp)
-                .clip(RoundedCornerShape(3.dp)),
-              color = GeoBluePrimary,
-              trackColor = GeoBorderLight
-            )
-
-            Text(
-              text = scanProgress.message,
-              style = MaterialTheme.typography.bodySmall.copy(
-                fontFamily = FontFamily.Monospace,
-                fontSize = 11.sp
-              ),
-              color = GeoTextSecondary
-            )
-          }
-        }
-      } else {
-        OutlinedButton(
-          onClick = onStartScan,
-          modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .testTag("scan_network_button"),
-          shape = RoundedCornerShape(14.dp),
-          colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = GeoBluePrimary,
-            containerColor = GeoSurfaceVariant
-          ),
-          border = androidx.compose.foundation.BorderStroke(1.dp, GeoBluePrimary.copy(alpha = 0.4f))
-        ) {
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-          ) {
-            Icon(
-              imageVector = Icons.Default.Search,
-              contentDescription = "Scan",
-              modifier = Modifier.size(18.dp)
-            )
-            Text(
-              text = "Auto-Detect Display on WiFi (Scan Network)",
-              fontWeight = FontWeight.Bold,
-              fontSize = 13.sp
-            )
-          }
-        }
-      }
-
-      // Quick subnet presets dropdown
-      Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(
-          text = "Subnet Presets Dropdown:",
-          style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-          color = GeoTextSecondary
-        )
-
-        ExposedDropdownMenuBox(
-          expanded = isDropdownExpanded,
-          onExpandedChange = { isDropdownExpanded = it },
-          modifier = Modifier.fillMaxWidth()
-        ) {
-          OutlinedTextField(
-            value = matchingPreset?.second ?: "Select a Subnet Preset...",
-            onValueChange = {},
-            readOnly = true,
-            shape = RoundedCornerShape(12.dp),
-            trailingIcon = {
-              ExposedDropdownMenuDefaults.TrailingIcon(expanded = isDropdownExpanded)
-            },
-            colors = OutlinedTextFieldDefaults.colors(
-              focusedContainerColor = GeoSurfaceVariant,
-              unfocusedContainerColor = GeoSurfaceVariant,
-              focusedBorderColor = GeoBluePrimary,
-              unfocusedBorderColor = GeoBorderLight,
-              focusedTextColor = GeoTextPrimary,
-              unfocusedTextColor = GeoTextPrimary
-            ),
-            textStyle = TextStyle(
-              fontSize = 14.sp,
-              fontWeight = FontWeight.Medium,
-              color = GeoTextPrimary
-            ),
-            modifier = Modifier
-              .fillMaxWidth()
-              .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
-              .testTag("subnet_preset_dropdown")
+          Icon(
+            imageVector = Icons.Default.Info,
+            contentDescription = null,
+            tint = GeoBluePrimary,
+            modifier = Modifier.size(16.dp)
           )
-
-          ExposedDropdownMenu(
-            expanded = isDropdownExpanded,
-            onDismissRequest = { isDropdownExpanded = false },
-            containerColor = GeoSurfaceLight
-          ) {
-            subnetPresets.forEach { (prefix, label) ->
-              val isSelected = ipAddress.startsWith(prefix)
-              DropdownMenuItem(
-                text = {
-                  Column {
-                    Text(
-                      text = label,
-                      style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        color = if (isSelected) GeoBluePrimary else GeoTextPrimary
-                      )
-                    )
-                    Text(
-                      text = "Prefix: $prefix",
-                      style = MaterialTheme.typography.labelSmall.copy(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 10.sp,
-                        color = GeoTextSecondary
-                      )
-                    )
-                  }
-                },
-                leadingIcon = {
-                  Icon(
-                    imageVector = Icons.Default.Wifi,
-                    contentDescription = null,
-                    tint = if (isSelected) GeoBluePrimary else GeoTextSecondary,
-                    modifier = Modifier.size(18.dp)
-                  )
-                },
-                onClick = {
-                  onIpChanged(prefix)
-                  isDropdownExpanded = false
-                },
-                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
-              )
-            }
-          }
+          Text(
+            text = "Connect phone Wi-Fi directly to NodeMCU network, then tap Send.",
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+            color = GeoTextPrimary
+          )
         }
       }
     }
@@ -797,12 +641,16 @@ fun GeometricConnectionCard(
 fun GeometricContentControlCard(
   message: String,
   onMessageChanged: (String) -> Unit,
+  securityPin: String,
+  onSecurityPinChanged: (String) -> Unit,
   onSendMessage: () -> Unit,
   onShowSensor: () -> Unit,
   isExecuting: Boolean,
   currentMode: DisplayMode,
   modifier: Modifier = Modifier
 ) {
+  var isPinVisible by remember { mutableStateOf(false) }
+
   Card(
     modifier = modifier
       .fillMaxWidth()
@@ -901,8 +749,9 @@ fun GeometricContentControlCard(
               )
             }
             if (message.isNotEmpty()) {
+              val pinQuery = if (securityPin.isNotBlank()) "&pin=***" else ""
               Text(
-                text = "GET /message?text=${message.take(24)}${if (message.length > 24) "..." else ""}",
+                text = "GET /message?text=${message.take(20)}${if (message.length > 20) "..." else ""}$pinQuery",
                 style = MaterialTheme.typography.labelSmall.copy(
                   fontWeight = FontWeight.Normal,
                   fontSize = 10.sp,
@@ -912,6 +761,79 @@ fun GeometricContentControlCard(
               )
             }
           }
+        }
+      )
+
+      // Optional Admin Security PIN for NodeMCU Protection
+      OutlinedTextField(
+        value = securityPin,
+        onValueChange = onSecurityPinChanged,
+        modifier = Modifier
+          .fillMaxWidth()
+          .testTag("security_pin_input"),
+        placeholder = {
+          Text(
+            "PIN / Key (leave empty if none)",
+            color = GeoTextTertiary,
+            fontSize = 14.sp
+          )
+        },
+        label = {
+          Text(
+            "Admin Security PIN (Optional)",
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 13.sp
+          )
+        },
+        textStyle = TextStyle(
+          color = GeoTextPrimary,
+          fontSize = 15.sp,
+          fontFamily = FontFamily.Monospace
+        ),
+        singleLine = true,
+        visualTransformation = if (isPinVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(
+          keyboardType = KeyboardType.Password,
+          imeAction = ImeAction.Send
+        ),
+        keyboardActions = KeyboardActions(onSend = { onSendMessage() }),
+        leadingIcon = {
+          Icon(
+            imageVector = Icons.Default.Lock,
+            contentDescription = "Security PIN",
+            tint = if (securityPin.isNotEmpty()) GeoBluePrimary else GeoTextSecondary,
+            modifier = Modifier.size(18.dp)
+          )
+        },
+        trailingIcon = {
+          if (securityPin.isNotEmpty()) {
+            IconButton(onClick = { isPinVisible = !isPinVisible }) {
+              Icon(
+                imageVector = if (isPinVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                contentDescription = if (isPinVisible) "Hide PIN" else "Show PIN",
+                tint = GeoTextSecondary,
+                modifier = Modifier.size(18.dp)
+              )
+            }
+          }
+        },
+        shape = RoundedCornerShape(14.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+          focusedBorderColor = GeoBluePrimary,
+          unfocusedBorderColor = GeoBorderLight,
+          focusedContainerColor = GeoSurfaceLight,
+          unfocusedContainerColor = GeoSurfaceVariant,
+          focusedLabelColor = GeoBluePrimary,
+          unfocusedLabelColor = GeoTextSecondary,
+          focusedTextColor = GeoTextPrimary,
+          unfocusedTextColor = GeoTextPrimary
+        ),
+        supportingText = {
+          Text(
+            text = if (securityPin.isNotBlank()) "Security PIN active: only authorized messages will update display" else "Optional: protects against unauthorized student/visitor changes",
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+            color = if (securityPin.isNotBlank()) GeoBluePrimary else GeoTextSecondary
+          )
         }
       )
 
